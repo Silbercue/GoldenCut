@@ -54,3 +54,7 @@ Typo-Leiter nach Tim Browns Modular Scale, Zeilenlaenge nach Bringhurst, Rand-Ka
 Vokabel-Hub einer Lern-App (iPhone-Viewport): Harmonie-Index 55 % → 89 %, 29 Korrekturen, 0 verbleibend, Layout
 intakt. Eine von Hand nach Phi gebaute Variante derselben Seite kam ohne Schrift-Korrektur durch — die automatisch
 erkannte Typo-Basis (13,75 · √φ) entsprach der handgebauten Leiter.
+
+## Lizenz
+
+MIT — siehe [LICENSE](LICENSE). © 2026 Julian Friedrich
