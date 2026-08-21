@@ -1,0 +1,9 @@
+{
+  "_kommentar": "Projektweite Zielreihe fuer goldencut. Kopieren nach goldencut.config.json und mit --config uebergeben. Werte = Defaults.",
+  "spacing": { "ratio": 1.6180339887, "bases": [8, 16], "round": 1, "min": 2, "max": 400 },
+  "type": { "ratio": 1.2720196495, "base": "auto", "round": 0.5, "min": 8, "max": 160 },
+  "tolerance": { "series": 0.05, "type": 0.10, "ratio": 0.03, "symmetry": 0.06, "innerOuter": 0.10 },
+  "lineHeight": { "body": [1.2, 1.62], "heading": [1.0, 1.25], "headingFactor": 1.5 },
+  "protect": [44, 24],
+  "icon": { "max": 64, "round": 0.5 }
+}

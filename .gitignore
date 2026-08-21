@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Lokal, nicht veroeffentlicht: Recherche-Unterlagen und Referenzlaeufe aus Produktionsprojekten
+reference/
+examples/
+
+# Projektspezifische Zielreihe und Laufausgaben
+goldencut.config.json
+out/
+*.override.css
+before.*
+after.*
+proof.png
+report*.md
+corrections*.json
