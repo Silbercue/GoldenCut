@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- goldencut Testbild — absichtliche Verstoesse mit bekanntem Soll (Pruefung: tests/run_testbild.py).
+     Jeder Verstoss ist hier dokumentiert; alles andere ist absichtlich korrekt gebaut (keine Falschmeldungen erwartet).
+
+     V1  Geschwister Kachel   .stat--v1: Label sitzt 3 px tiefer als bei den zwei Geschwistern (margin-top 15 statt 12)  -> G1 verstoß (Luecke/Polster unten), Gate
+     V2  Geschwister Chip     .pill--v2: padding-left 18 statt 12                                                        -> G1 verstoß (Polster links)
+     V3  Naehe-Ordnung        .stats: Kachelabstand 8 < Innenluecke der Kacheln (~12)                                    -> C1 verstoß je Stat-Kachel + Ebenen
+     V4  Titel zu weit weg    .cardtile: h2 margin-bottom 24 >> Zeilenabstand des Textes                                 -> C8 verstoß Titel→Text
+     V5  Block klebt          .cardtile .status: margin-top -6, Abstand enger als der Zeilenfall                         -> C8 verstoß Text→Block
+     V6  Balken zu nah        .bartile .bar: links/rechts 8, unten 2                                                     -> B5 verstoß + C3 verstoß (engste Stelle Grafik)
+     V7  Stellung + Polaritaet h2 „Karten“ weiss auf dunkel und 61 px von links, h3 „Phasen“ dunkel und 13 px            -> G3 verstoß Stellung links + D1 Hinweis
+     KORREKT: .note ×2 (identische Geschwister, innen<aussen=φ, Polster ≥ Versalhoehe), .pill--a/--b, .stat 1+2, Typo (alle Korridore erfuellt)
+-->
+<html lang="de"><head><meta charset="utf-8"><title>goldencut Testbild</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: #f2ede4; color: #2c2620; }
+  .tb { width: 358px; margin: 16px auto 0; }
+  h1 { font-size: 23px; font-weight: 700; margin-bottom: 21px; }
+
+  /* Chips: Pille C mit falschem linken Polster (V2) */
+  .pills { display: flex; gap: 8px; margin-bottom: 21px; }
+  .pill { display: inline-flex; align-items: center; height: 36px; border-radius: 18px; background: #d8c9ae; padding: 0 12px; }
+  .pill--v2 { padding-left: 18px; }
+  .pill .pl { font-size: 14px; }
+
+  /* Stat-Kacheln: Kachel 1 mit versetztem Label (V1); Kachelabstand 8 < Innenluecke (V3) */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
+  .stat { height: 96px; background: #fff; border: 1px solid #d9d0bf; border-radius: 10px; text-align: center; padding-top: 14px; }
+  .stat .num { font-size: 32px; font-weight: 700; line-height: 1.1; }
+  .stat .lbl { font-size: 14px; margin-top: 12px; }
+  .stat--v1 .lbl { margin-top: 15px; }
+
+  /* Balken-Kachel: Balken links/rechts 8, unten 2 (V6); Titel-Stellung links 13 als Referenz fuer V7 */
+  .bartile { background: #fff; border: 1px solid #d9d0bf; border-radius: 10px; padding: 13px 13px 0; margin-bottom: 24px; }
+  .bartile h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .bartile .legend { font-size: 14px; margin-bottom: 14px; }
+  .bartile .bar { height: 24px; border-radius: 6px; background: linear-gradient(90deg, #c96a4a 0 30%, #d9a441 0 60%, #6f9a5d 0); margin: 0 -5px 2px; }
+
+  /* Karten-Kachel: Titel weiss auf dunkel (V7), zu weit vom Text (V4), Status klebt (V5), Inhalt 48 px eingerueckt (V7 Stellung) */
+  .cardtile { background: #a04e14; border-radius: 10px; padding: 13px 13px 16px; color: #fff; margin-bottom: 24px; }
+  .cardtile .inner { margin-left: 48px; }
+  .cardtile h2 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+  .cardtile .desc { font-size: 14px; line-height: 22px; }
+  .cardtile .status { font-size: 14px; line-height: 22px; margin-top: -6px; font-weight: 600; }
+
+  /* Notiz-Kacheln: korrektes Geschwisterpaar — innen ~10 < aussen 16 (φ), Polster ≥ Versalhoehe */
+  .note { background: #fff; border: 1px solid #d9d0bf; border-radius: 10px; padding: 10px 13px 12px; margin-bottom: 16px; }
+  .note .nlbl { font-size: 14px; font-weight: 600; margin-bottom: 1px; }
+  .note .ntxt { font-size: 14px; }
+</style></head>
+<body>
+<div class="tb">
+  <h1>Testbild</h1>
+  <div class="pills">
+    <span class="pill pill--a"><span class="pl">Alpha</span></span>
+    <span class="pill pill--b"><span class="pl">Beta</span></span>
+    <span class="pill pill--v2"><span class="pl">Gamma</span></span>
+  </div>
+  <div class="stats">
+    <div class="stat stat--v1"><div class="num">36</div><div class="lbl">Aktiv</div></div>
+    <div class="stat"><div class="num">12</div><div class="lbl">Fällig</div></div>
+    <div class="stat"><div class="num">28</div><div class="lbl">Fertig</div></div>
+  </div>
+  <div class="bartile">
+    <h3>Phasen</h3>
+    <div class="legend">19 · 17 · 14 · 26</div>
+    <div class="bar"></div>
+  </div>
+  <div class="cardtile">
+    <div class="inner">
+      <h2>Karten</h2>
+      <p class="desc">Bestimmte Wörter gezielt für eine Aufgabe oder einen Termin üben.</p>
+      <p class="status">Insgesamt 8 fällig</p>
+    </div>
+  </div>
+  <div class="note"><div class="nlbl">Notiz</div><div class="ntxt">Erste Karte, korrekt gebaut.</div></div>
+  <div class="note"><div class="nlbl">Ablage</div><div class="ntxt">Zweite Karte, identisch zur ersten.</div></div>
+</div>
+</body></html>

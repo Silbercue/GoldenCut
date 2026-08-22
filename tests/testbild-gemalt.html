@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- goldencut Testbild GEMALT — echte gemalte Flaechen (Gemini-Assets in tests/assets/, Sollwerte in
+     tests/assets/soll.json aus prep-Messung). Prueft den M1-Pfad (sichtbare Kante per Tintenprofil),
+     die Robustheit der Kanten-Messung auf Grain/Wash-Hintergruenden und das Zusammenspiel
+     Polster <-> sichtbare Kante. Pruefung: tests/run_testbild_gemalt.py.
+
+     P1  M1 note   .note ×2: frame-note.png (354×86 CSS, 2x-Asset, transparenter Rand) — sichtbare
+                   Kante liegt INNERHALB der CSS-Box: oben 5,5 · unten 5,5 · links 7,5 · rechts 6,5 px
+     P2  M1 stat   .stat ×3: frame-stat.png (114×96 CSS) — Einzug ~4,5 px ringsum
+     P3  M1 wash   .wash: grain-fill.png randlos als Flaeche — sichtbare Kante = CSS-Box (Einzug < 1)
+     W1  G1        .note--w1: padding-left 26 statt 14                    -> G1 verstoß (Polster links), Gate
+     W2  C1        .stats: Kachelabstand 6 < Innenluecke der Kacheln (~14) -> C1 verstoß je Stat-Kachel
+     KORREKT: Stat-Kacheln identisch (G1), .wash, Typo (alle Korridore), Body-Grain darf keine
+              M1-Falschtreffer ausloesen (lokaler Kontrast des Grains max 36 < Schwelle 60).
+-->
+<html lang="de"><head><meta charset="utf-8"><title>goldencut Testbild gemalt</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #3a2c1c;
+         background: #efe3cd url(assets/grain-bg.png); background-size: 512px 512px; }
+  .tbg { width: 354px; margin: 16px auto 0; }
+  h1 { font-size: 23px; font-weight: 700; margin-bottom: 21px; }
+
+  /* Stat-Kacheln: gemalter Rahmen, identische Geschwister; Kachelabstand 6 < Innenluecke (W2) */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 24px; }
+  .stat { height: 96px; background: url(assets/frame-stat.png); background-size: 100% 100%;
+          text-align: center; padding-top: 13px; }
+  .stat .num { font-size: 32px; font-weight: 700; line-height: 1.1; }
+  .stat .lbl { font-size: 14px; margin-top: 12px; }
+
+  /* Notiz-Kacheln: gemalter Rahmen mit transparentem Rand (P1); Kachel 2 mit falschem Polster links (W1) */
+  .note { width: 330px; height: 86px; background: url(assets/frame-note.png); background-size: 100% 100%;
+          padding: 18px 14px 0; margin: 0 auto 16px; }
+  .note--w1 { padding-left: 26px; }
+  .note .nlbl { font-size: 14px; font-weight: 600; margin-bottom: 1px; }
+  .note .ntxt { font-size: 14px; }
+
+  /* Wash-Kachel: randlos gemalte Flaeche (P3), hell auf dunkel */
+  .wash { width: 330px; height: 76px; background: url(assets/grain-fill.png); background-size: cover;
+          padding: 16px 14px 0; margin: 0 auto; color: #f3ecd9; }
+  .wash .wlbl { font-size: 14px; font-weight: 600; margin-bottom: 1px; }
+  .wash .wtxt { font-size: 14px; }
+</style></head>
+<body>
+<div class="tbg">
+  <h1>Gemalt</h1>
+  <div class="stats">
+    <div class="stat"><div class="num">36</div><div class="lbl">Aktiv</div></div>
+    <div class="stat"><div class="num">12</div><div class="lbl">Fällig</div></div>
+    <div class="stat"><div class="num">28</div><div class="lbl">Fertig</div></div>
+  </div>
+  <div class="note"><div class="nlbl">Notiz</div><div class="ntxt">Erste Karte, korrekt gebaut.</div></div>
+  <div class="note note--w1"><div class="nlbl">Ablage</div><div class="ntxt">Zweite Karte, Polster links falsch.</div></div>
+  <div class="wash"><div class="wlbl">Wald</div><div class="wtxt">Randlos gemalte Fläche.</div></div>
+</div>
+</body></html>

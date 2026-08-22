@@ -7,6 +7,14 @@ Grundsatz (reference/regeln.md, Abschnitt 6): Erst die Zielreihe festlegen,
 dann alles dagegen messen. Harmonisch ist ein Aufbau, wenn alle Masse auf
 derselben Reihe liegen — nicht, wenn einzelne Verhaeltnisse zufaellig 1,6 ergeben.
 
+Der Index heisst ehrlich „Reihen-Treue" (Harmonie-Index): Anteil der Einzelmasse auf der Reihe.
+Er ist blind fuer Gruppen, Luecken und Augen-Masse — die sieht gc_layout (Ordnung). Die Reihe ist
+im Urteil das LETZTE, nicht das Erste (Prinzip 2026-08-22): Zugehoerigkeit → Konsistenz in der
+Gruppe → Ordnung zwischen den Gruppen → Reihe. Der Solver (Bauschritt 3, noch nicht gebaut) muss
+in der Reihenfolge Schrift → Luecken → Polster → Kachel rechnen; dieser Einzel-Snap hier kann
+Kachelpolster auf die Reihe setzen, waehrend das Innenleben bleibt — deshalb vergleicht run die
+Ordnung vorher/nachher und warnt, wenn sie faellt.
+
 Aufruf:
   gc_analyze.py before.json --out DIR [--config goldencut.config.json]
                 [--type-base 16] [--type-ratio 1.272] [--spacing-bases 8,16]
@@ -197,6 +205,9 @@ class Analyzer:
                     self.add("P9", "Rand-Symmetrie", e, "padding-left", pl, m, (pl - m) / m, "patch", f"links {fmt(pl)} ≠ rechts {fmt(pr)} → beide {fmt(m)}")
                     self.add("P9", "Rand-Symmetrie", e, "padding-right", pr, m, (pr - m) / m, "patch", "")
             # vertikal: unten ≥ oben (Kanon: unten = oben·φ mit --canon)
+            if max(pt, pb) >= 2 and e["display"] != "inline" and deliberate and pb < pt * (1 - tol):
+                self.add("P9", "Rand-Kanon", e, "padding-bottom", pb, pt, (pb - pt) / pt, "report",
+                         f"unten {fmt(pb)} < oben {fmt(pt)} — vermutlich Platz für Deko (Pseudo-Element oder absolutes Kind); nur prüfen")
             if max(pt, pb) >= 2 and e["display"] != "inline" and not deliberate:
                 if pb < pt * (1 - tol):
                     m, _ = nearest(self.spacing, pt)
@@ -442,9 +453,11 @@ def build_report(data, an, findings, cfg):
     L.append(f"- Schrift/Icons: Ratio {ty['ratio']:.3f}, Basis {fmt(an.type_base)} → {' · '.join(fmt(v) for v in an.type_series if v <= 72)}")
     L.append(f"- Toleranzen: Reihe ±{int(cfg['tolerance']['series'] * 100)} %, Skala |Δn| ≤ {cfg['tolerance']['type']}, Verhältnis ±{int(cfg['tolerance']['ratio'] * 100)} %  ·  geschützt: {cfg['protect']}")
     L.append("")
-    L.append("## Harmonie-Index")
+    L.append("## Reihen-Treue (Harmonie-Index)")
     L.append("")
-    L.append(f"**{idx} %** — {on} von {total} geprüften Maßen liegen auf der Zielreihe. {len(patches)} Korrekturen, {len(reports)} Hinweise.")
+    L.append(f"**{idx} %** — {on} von {total} geprüften Maßen liegen auf der Zielreihe. {len(patches)} Korrekturen, {len(reports)} Hinweise. "
+             "Die Zahl misst Einzelmaße auf der Reihe — nicht Gruppen, nicht Lücken, nicht das Auge; dafür stehen Ordnung/Ruhe/Balance (layout-report) und Lesbarkeit (typo-report). "
+             "Immer alle fünf zusammen lesen.")
     L.append("")
 
     def table(rows, title):
@@ -472,7 +485,8 @@ def build_report(data, an, findings, cfg):
     L.append("")
     L.append("Korrekturen sind Snaps bestehender Maße auf die Zielreihe — keine neuen Elemente, keine Layoutänderungen. "
              "Teilungen und Formate stehen nur als Hinweis, weil sie Produktentscheidungen sind. "
-             "Ein hoher Index heißt „konsistent“, nicht „schön“: Phi ist hier Konsistenzsystem, kein Schönheitsgesetz (regeln.md §5).")
+             "Ein hoher Index heißt „konsistent“, nicht „schön“: Phi ist hier Konsistenzsystem, kein Schönheitsgesetz (regeln.md §5). "
+             "Reihenfolge beim Anwenden: Schrift → Lücken → Polster → Kachel — Kachelmaße zuletzt, sonst wird das Innenleben verschoben (Probedurchlauf 2026-08-22).")
     return "\n".join(L) + "\n", idx
 
 
@@ -535,7 +549,7 @@ def main():
         "findings": findings}, ensure_ascii=False, indent=1), encoding="utf-8")
 
     n_patch = sum(1 for f in findings if f["action"] == "patch")
-    print(f"Harmonie-Index {idx} % ({an.on_series}/{an.checked}) · {n_patch} Korrekturen auf {n_sel} Selektoren · {sum(1 for f in findings if f['action'] in ('report', 'geschuetzt'))} Hinweise -> {out / ('report' + args.suffix + '.md')}")
+    print(f"Reihen-Treue (Harmonie-Index) {idx} % ({an.on_series}/{an.checked}) · {n_patch} Korrekturen auf {n_sel} Selektoren · {sum(1 for f in findings if f['action'] in ('report', 'geschuetzt'))} Hinweise -> {out / ('report' + args.suffix + '.md')}")
     return 0
 
 

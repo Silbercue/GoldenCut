@@ -1,0 +1,28 @@
+{
+  "frame-note.png": {
+    "css": [
+      330,
+      86
+    ],
+    "einzug_nominal": 5,
+    "einzug_gemessen": {
+      "top": 5.5,
+      "bottom": 5.5,
+      "left": 7.5,
+      "right": 6.5
+    }
+  },
+  "frame-stat.png": {
+    "css": [
+      114,
+      96
+    ],
+    "einzug_nominal": 4,
+    "einzug_gemessen": {
+      "top": 4.5,
+      "bottom": 4.5,
+      "left": 4.5,
+      "right": 4.5
+    }
+  }
+}

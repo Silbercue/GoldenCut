@@ -9,6 +9,8 @@ Kein Kritik-Tool. Es sagt nicht „wirkt unruhig", es sagt „padding-top 7 → 
 ## Schnellstart
 
 ```bash
+python3 scripts/goldencut.py judge datei.html --scope ".meine-kachel" --out /tmp/gc   # Schritt 1: nur urteilen
+# → typo-report.md, typo-overlay.png  (Lesbarkeit je Text am Leseabstand, Rollen, Hierarchie)
 python3 scripts/goldencut.py run datei.html --scope ".meine-kachel" --out /tmp/gc --title "Kachel"
 # → /tmp/gc/report.md, patch.css, proof.png   (Index vorher → nachher)
 python3 scripts/goldencut.py apply --html datei.html --patch /tmp/gc/patch.css   # statische HTML
@@ -29,11 +31,15 @@ Die `SKILL.md` im Repo-Root ist die Skill-Definition (Trigger: „goldener schni
 | Pfad | Inhalt |
 |---|---|
 | `SKILL.md` | Skill-Definition: Ablauf, Defaults, Pruefungen, Fallen |
-| `scripts/goldencut.py` | Einstieg: `run` · `measure` · `analyze` · `apply` |
+| `scripts/goldencut.py` | Einstieg: `judge` · `run` · `measure` · `analyze` · `apply` |
+| `scripts/gc_roles.py` | Leseart je Text (Kennzahl, Titel, Lesetext, Nebentext, Label …) |
+| `scripts/gc_typo.py` | Schritt 1: Lesbarkeits-Korridore (Sehwinkel der x-Hoehe), Hierarchie, Overlay |
+| `scripts/gc_layout.py` | Schritt 1 (b): Ordnungsrelationen, Aufteilung, Balance, Overlay |
 | `scripts/gc_measure.py` | DOM-Messung (Playwright): computed styles, Boxen, Icons, Screenshot |
 | `scripts/gc_analyze.py` | Regelwerk → Korrekturen, Report, Patch, Harmonie-Index |
 | `scripts/gc_compose.py` | Beweisbild vorher · nachher · Differenz |
 | `goldencut.config.example.json` | Vorlage fuer eine projektweite Zielreihe |
+| `tests/` | Testbilder (HTML) mit bekannten Soll-Werten und Runner-Skripte |
 | `reference/`, `examples/` | lokal, nicht im Repo: Regelwerk mit Quellen, Referenzlaeufe |
 
 ## Zielreihe (Default)

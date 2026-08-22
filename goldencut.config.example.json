@@ -5,5 +5,16 @@
   "tolerance": { "series": 0.05, "type": 0.10, "ratio": 0.03, "symmetry": 0.06, "innerOuter": 0.10 },
   "lineHeight": { "body": [1.2, 1.62], "heading": [1.0, 1.25], "headingFactor": 1.5 },
   "protect": [44, 24],
+  "legibility": {
+    "_kommentar": "Schritt 1 (judge): Leseabstand in mm oder 'auto' (Handy 300 / Tablet 450 / Laptop 550 / Desktop 700 aus Viewport-Breite); Sehwinkel der x-Hoehe in Grad",
+    "distanceMm": "auto",
+    "floorDeg": 0.20,
+    "comfortDeg": { "body": 0.27, "consult": 0.22, "label": 0.22, "action": 0.24, "subtitle": 0.27, "title": 0.30, "number": 0.35 },
+    "minPx": { "consult": 11, "label": 11, "action": 12, "body": 14, "subtitle": 14, "title": 16, "number": 16 },
+    "lightOnDark": 1.10, "lightWeight": 1.10, "lowContrast": 1.10,
+    "cpl": [45, 75], "cplSoft": 35,
+    "hierarchyMin": 1.25, "maxSizes": 5, "numberDominance": 2.0, "touch": 44
+  },
+  "roles": { "_kommentar": "Rollen-Overrides: Selektor oder exakter Text -> number|title|subtitle|body|consult|label|action" },
   "icon": { "max": 64, "round": 0.5 }
 }
