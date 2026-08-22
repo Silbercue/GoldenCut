@@ -16,7 +16,7 @@ python3 scripts/goldencut.py run datei.html --scope ".meine-kachel" --out /tmp/g
 python3 scripts/goldencut.py apply --html datei.html --patch /tmp/gc/patch.css   # statische HTML
 ```
 
-Voraussetzungen: Python 3 mit `playwright` (+ `playwright install chromium`), `Pillow`, `numpy`.
+Voraussetzungen: Python 3, dann `pip install -r requirements.txt` und `playwright install chromium`.
 
 ## Als Skill einbinden
 
