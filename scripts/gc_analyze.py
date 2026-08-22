@@ -85,12 +85,13 @@ def fmt(v):
 # ---------------------------------------------------------------- Analyse
 
 class Analyzer:
-    def __init__(self, data, cfg, canon=False, fix_all=False):
+    def __init__(self, data, cfg, canon=False, fix_all=False, typo_min=None):
         self.d = data
         self.cfg = cfg
         self.els = data["elements"]
         self.canon = canon
         self.fix_all = fix_all
+        self.typo_min = typo_min or {}   # Element-Index -> Rollen-Minimum px (aus gc_typo)
         self.findings = []   # dicts
         self.checked = 0     # Bias-Guard: geprueft
         self.on_series = 0   # Bias-Guard: schon auf der Reihe
@@ -249,18 +250,39 @@ class Analyzer:
     def check_type(self):
         ty, tol = self.cfg["type"], self.cfg["tolerance"]["type"]
         texts = [e for e in self.els if e["textLen"] > 0 and not e["isIcon"] and e["fs"] > 0 and not self.inherited_dup(e)]
-        # Zielstufe je Schriftgroesse; Kollisionen (zwei Groessen -> eine Stufe) aufloesen, damit keine
-        # Hierarchiestufe verschwindet: die kleinere rutscht eine Stufe tiefer.
+        # Zielstufe je Schriftgroesse; Kollisionen (zwei Groessen -> eine Stufe) aufloesen.
+        # Regeln (Versagensanalyse 2026-08-22 — die alte Auslese "kleinere rutscht tiefer" kaskadierte
+        # 16→13→10→8 und drueckte Werte, die schon auf der Leiter lagen, unter die Rollen-Minima):
+        # 1. Liegen beide Groessen unter einer lesbaren Hierarchiestufe (< 1.25x, Regel aus gc_typo),
+        #    werden sie auf EINE Stufe zusammengelegt statt kuenstlich auseinandergerissen.
+        # 2. Sonst weicht die kleinere eine Stufe nach unten — aber nie unter ihr Rollen-Minimum
+        #    (aus gc_typo, via --typo); dann weicht stattdessen die groessere nach oben.
         sizes = sorted({round(e["fs"], 2) for e in texts})
         plan = {}
         for fs in sizes:
             n, frac = scale_pos(fs, self.type_base, ty["ratio"])
             plan[fs] = {"n": n, "frac": frac, "step": round(n)}
+        floors = {}
+        for e in texts:
+            k = round(e["fs"], 2)
+            floors[k] = max(floors.get(k, 0), self.typo_min.get(e["i"], 0))
         for i in range(len(sizes) - 1, 0, -1):
             hi, lo = sizes[i], sizes[i - 1]
-            if plan[lo]["step"] >= plan[hi]["step"] and abs(hi - lo) >= 0.5:
-                plan[lo]["step"] = plan[hi]["step"] - 1
-                plan[lo]["frac"] = abs(plan[lo]["n"] - plan[lo]["step"])
+            if plan[lo]["step"] < plan[hi]["step"] or abs(hi - lo) < 0.5:
+                continue
+            if hi / lo < 1.25:
+                plan[lo]["step"] = plan[hi]["step"]
+            else:
+                down = round_to(self.type_base * ty["ratio"] ** (plan[hi]["step"] - 1), ty["round"])
+                if down >= floors.get(lo, 0) or down >= lo:
+                    plan[lo]["step"] = plan[hi]["step"] - 1
+                else:
+                    k = i
+                    while k < len(sizes) and (k == i or plan[sizes[k]]["step"] <= plan[sizes[k - 1]]["step"]):
+                        plan[sizes[k]]["step"] += 1
+                        plan[sizes[k]]["frac"] = abs(plan[sizes[k]]["n"] - plan[sizes[k]]["step"])
+                        k += 1
+            plan[lo]["frac"] = abs(plan[lo]["n"] - plan[lo]["step"])
         for fs, p in plan.items():
             p["target"] = round_to(self.type_base * ty["ratio"] ** p["step"], ty["round"])
             self.checked += 1
@@ -525,6 +547,7 @@ def main():
     ap.add_argument("--spacing-ratio", type=float, default=None)
     ap.add_argument("--grid", type=float, default=None, help="Rundung der Abstandsreihe, z.B. 4 fuer 4-px-Raster")
     ap.add_argument("--protect", default=None, help="Komma-Liste geschuetzter Werte oder 'none'")
+    ap.add_argument("--typo", default=None, help="typo.json aus gc_typo — Rollen-Minima als Boden fuer Abwaerts-Snaps")
     ap.add_argument("--canon", action="store_true", help="Satzspiegel-Kanon: padding-bottom = top·φ erzwingen")
     ap.add_argument("--fix-all", action="store_true", help="auch Innen:Außen-Verstoesse patchen")
     ap.add_argument("--suffix", default="", help="Dateinamen-Suffix (z.B. -after)")
@@ -534,7 +557,11 @@ def main():
     cfg = load_cfg(args.config, args)
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
 
-    an = Analyzer(data, cfg, canon=args.canon, fix_all=args.fix_all)
+    typo_min = {}
+    if args.typo and Path(args.typo).exists():
+        typo = json.loads(Path(args.typo).read_text(encoding="utf-8"))
+        typo_min = {t["i"]: t.get("minPx", 0) for t in typo.get("texts", [])}
+    an = Analyzer(data, cfg, canon=args.canon, fix_all=args.fix_all, typo_min=typo_min)
     findings = an.run()
     report, idx = build_report(data, an, findings, cfg)
     patch, n_sel = build_patch(findings, important=False)

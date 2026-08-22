@@ -158,12 +158,13 @@ def cmd_run(argv):
     print("1/4 Messung …", flush=True)
     print("   " + sh([HERE / "gc_measure.py", target, "--out", out, "--name", "before"] + scope + meas))
     print("2/4 Analyse …", flush=True)
-    print("   " + sh([HERE / "gc_analyze.py", out / "before.json", "--out", out] + ana))
-    before = json.loads((out / "corrections.json").read_text(encoding="utf-8"))
     cfg_opts = [x for i, x in enumerate(ana) if x == "--config" or (i > 0 and ana[i - 1] == "--config")]
     judge_opts = [x for i, x in enumerate(ana) if x in JUDGE_OPTS or (i > 0 and ana[i - 1] in JUDGE_OPTS)]
-    # Die anderen vier Zahlen gehoeren dazu — die Reihen-Treue allein sagt nichts ueber Ordnung oder Gruppen
+    # Typo zuerst: die Rollen-Minima aus dem Typo-Urteil sind der Boden fuer Abwaerts-Snaps in der Analyse
     sh([HERE / "gc_typo.py", out / "before.json", "--out", out] + judge_opts)
+    print("   " + sh([HERE / "gc_analyze.py", out / "before.json", "--out", out, "--typo", out / "typo.json"] + ana))
+    before = json.loads((out / "corrections.json").read_text(encoding="utf-8"))
+    # Die anderen vier Zahlen gehoeren dazu — die Reihen-Treue allein sagt nichts ueber Ordnung oder Gruppen
     sh([HERE / "gc_layout.py", out / "before.json", "--out", out] + cfg_opts)
     z_before = five(out)
     print("   " + five_line(z_before))
@@ -177,9 +178,9 @@ def cmd_run(argv):
                       "--inject", out / "patch.override.css"] + scope + meas))
     # Basis der Typo-Leiter aus der Vorher-Analyse festhalten, damit der Nachher-Vergleich dieselbe Reihe nutzt
     ana_after = ana + ([] if "--type-base" in ana else ["--type-base", before["typeBase"]])
-    print("   " + sh([HERE / "gc_analyze.py", out / "after.json", "--out", out, "--suffix=-after"] + ana_after))
-    after = json.loads((out / "corrections-after.json").read_text(encoding="utf-8"))
     sh([HERE / "gc_typo.py", out / "after.json", "--out", out, "--suffix=-after"] + judge_opts)
+    print("   " + sh([HERE / "gc_analyze.py", out / "after.json", "--out", out, "--suffix=-after", "--typo", out / "typo-after.json"] + ana_after))
+    after = json.loads((out / "corrections-after.json").read_text(encoding="utf-8"))
     sh([HERE / "gc_layout.py", out / "after.json", "--out", out, "--suffix=-after"] + cfg_opts)
     z_after = five(out, "-after")
     print("4/4 Beweisbild …", flush=True)
@@ -225,7 +226,7 @@ def cmd_judge(argv):
     print(sh([HERE / "gc_layout.py", out / "before.json", "--out", out] + cfg_opts))
     print("4/4 Reihen-Treue … (nur Urteil — report/patch.css im Ordner sind Ansichtsmaterial, nichts wird angewendet)")
     ana_only = [x for i, x in enumerate(ana) if x != "--distance" and not (i > 0 and ana[i - 1] == "--distance")]
-    sh([HERE / "gc_analyze.py", out / "before.json", "--out", out] + ana_only)
+    sh([HERE / "gc_analyze.py", out / "before.json", "--out", out, "--typo", out / "typo.json"] + ana_only)
     z = five(out)
     print(five_line(z))
     (out / "summary.json").write_text(json.dumps({"before": z, "after": None, "warnings": []}, ensure_ascii=False, indent=1), encoding="utf-8")

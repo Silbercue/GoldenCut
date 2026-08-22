@@ -189,7 +189,7 @@ Defaults zu nehmen — zwei Systeme mischen ist der groesste Fehler (§5.0).
 | P7 | Padding, Margin, Gap, Radius auf der Abstandsreihe | patch |
 | P9 | Rand-Symmetrie links = rechts, unten ≥ oben (sichtbare Boxen) | patch; bei Pseudo-Element/absolutem Kind nur Hinweis (Platz fuer Deko) |
 | P9 | Aussenrand des Scopes zum Viewport | Hinweis |
-| P4 | Schriftgroessen auf der Typo-Leiter, Hierarchiestufen bleiben erhalten | patch |
+| P4 | Schriftgroessen auf der Typo-Leiter; Hierarchiestufen bleiben erhalten: nicht lesbare Pseudo-Stufen (< 1,25×) werden zusammengelegt statt auseinandergerissen, Abwaerts-Snaps nie unter das Rollen-Minimum aus dem Typo-Urteil (dann weicht die groessere nach oben) | patch |
 | P5 | Zeilenhoehe im Korridor | patch |
 | P6 | Zeilenlaenge 45–75 Zeichen | Hinweis (max-width-Vorschlag) |
 | R10 | Icon-Groesse relativ zum Nachbartext | patch (ausser geschuetzt) |
@@ -239,9 +239,10 @@ Defaults zu nehmen — zwei Systeme mischen ist der groesste Fehler (§5.0).
 - `scripts/gc_analyze.py` — Regelwerk → Korrekturen, Report, Patch, Reihen-Treue (Harmonie-Index)
 - `scripts/gc_compose.py` — Beweisbild vorher | nachher | Differenz
 - `goldencut.config.example.json` — Vorlage fuer eine projektweite Zielreihe
-- `tests/` — Herz-und-Nieren-Pruefung: `testbild.html` + `run_testbild.py` (CSS-Flaechen, 16 Erwartungen)
-  und `testbild-gemalt.html` + `run_testbild_gemalt.py` (echt gemalte Assets in `tests/assets/`,
+- `tests/` — Herz-und-Nieren-Pruefung: `testbild.html` + `run_testbild.py` (CSS-Flaechen, 16 Erwartungen),
+  `testbild-gemalt.html` + `run_testbild_gemalt.py` (echt gemalte Assets in `tests/assets/`,
   Soll-Einzuege in `assets/soll.json`; prueft M1, Grain-Robustheit und den run-Pfad, 16 Erwartungen)
+  und `run_p4_kollision.py` (browserlos: P4-Kollisionsaufloesung — Zusammenlegen, Boden, Ausweichen nach oben)
 - `reference/`, `examples/` — lokal (gitignored): Regelwerk (regeln.md), Grafiker-Kette (schriftgroessen-abstaende.md), Mathematik-Modell (mathematische-prinzipien-ui.md), Zielbild (skill-konzept-v2.md), Referenzlaeufe
 
 Voraussetzungen: `python3` mit `playwright` (Chromium installiert), `Pillow`, `numpy`.
